@@ -1,0 +1,1 @@
+// settings.py - arquivo inicial
