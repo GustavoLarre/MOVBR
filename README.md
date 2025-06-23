@@ -1,63 +1,55 @@
 # MOVBR
 
-🚍 **MOVBR** é uma aplicação web desenvolvida para otimizar e agilizar a experiência de uso do transporte público no Distrito Federal. A plataforma oferece geração de rotas inteligentes, monitoramento de veículos em tempo real e informações turísticas integradas.
+🚍 MOVBR é uma aplicação web para facilitar o uso do transporte público no Distrito Federal, oferecendo visualização de rotas, paradas, horários e pontos turísticos diretamente em mapas interativos.
 
 ---
 
 ## 🗺️ Funcionalidades
 
-- 🔍 Pesquisa de rotas entre origem e destino.
-- 🚌 Visualização da localização dos veículos em tempo real.
-- 🗺️ Geração de itinerários com múltiplos modais.
-- ⌛ Previsão de chegada dos ônibus às paradas.
-- 🚨 Alertas sobre atrasos, mudanças de rota e interrupções.
-- 🏞️ Exibição de pontos turísticos próximos às paradas.
-- 🎯 Sugestões de passeios com base na localização atual.
-- 🗺️ Mapas interativos com informações em camadas.
+- 🔍 Pesquisa de rotas por nome e visualização de detalhes.
+- 🚌 Visualização de paradas e seus horários previstos.
+- 🗺️ Mapas interativos com marcadores personalizados (Leaflet).
+- 📍 Localização de paradas próximas com base na geolocalização do usuário.
+- 🗿 Exibição de pontos turísticos próximos às paradas.
+- 📲 Interface web responsiva baseada em templates HTML + CSS.
+- ⚡ API RESTful com dados georreferenciados via MongoDB.
 
 ---
 
 ## 🏗️ Arquitetura
 
-- **Backend:** Django + Django REST Framework (API RESTful).
-- **Frontend:** React (Web responsiva).
-- **Banco de Dados:** PostgreSQL com suporte a geolocalização via PostGIS.
-- **Processamento Assíncrono:** Celery + Redis.
-- **Containerização:** Docker.
-- **Integrações:** APIs públicas de transporte, turismo e mapas.
+- 🔙 Backend: Flask + PyMongo
+- 🌐 Frontend: HTML + CSS + JavaScript + Jinja2
+- 💃 Banco de Dados: MongoDB com suporte a geolocalização (2dsphere)
+- 🗺️ Integração: Leaflet.js para mapas + localização via navegador
+- ⚙️ Organização: Rotas divididas por interface (HTML) e API (JSON)
 
 ---
 
 ## 🧠 Tecnologias Utilizadas
 
 - Python 3.10+
-- Django
-- Django REST Framework
-- ReactJS
-- PostgreSQL + PostGIS
-- Celery
-- Redis
-- Docker
-- GeoPandas, GeoPy (para dados geoespaciais)
-- APIs públicas (GTFS, OpenStreetMap, dados turísticos)
+- Flask
+- PyMongo
+- MongoDB
+- Jinja2
+- Leaflet.js
+- HTML5 / CSS3
+- JavaScript
+- Geolocalização via navegador
 
 ---
 
-## 🗄️ Modelagem de Dados
+## 📄 Modelagem de Dados (MongoDB)
 
-**Principais Entidades:**
+As principais coleções usadas no banco movbr:
 
-- `usuario`
-- `veiculo`
-- `rota`
-- `parada`
-- `itinerario`
-- `itinerario_parada`
-- `veiculo_rota`
-- `ponto_turistico`
-- `notificacao`
+- rotas: { nome, descricao, origem, destino }
+- paradas: { nome, localizacao (GeoJSON Point) }
+- horarios: { parada (ObjectId), horario\_previsto }
+- turismo: { nome, descricao, localizacao }
 
-Com suporte geoespacial via campos `GEOGRAPHY(POINT, 4326)` nas tabelas relevantes.
+Todos os campos de geolocalização usam índice 2dsphere para permitir filtros por proximidade.
 
 ---
 
@@ -65,77 +57,95 @@ Com suporte geoespacial via campos `GEOGRAPHY(POINT, 4326)` nas tabelas relevant
 
 ### 🔧 Pré-requisitos
 
-- Docker e Docker Compose instalados  
-ou  
-- Python 3.10+, Node.js, PostgreSQL com PostGIS manualmente.
+- Python 3.10+
+- MongoDB instalado e rodando localmente
+- (Opcional) MongoDB Compass para gerenciar dados visualmente
 
-### 📦 Executando com Docker (Recomendado)
+### ▶️ Executando o app Flask
+
+1. Clone o projeto:
 
 ```bash
 git clone https://github.com/seuusuario/movbr.git
 cd movbr
-docker-compose up --build
 ```
 
-Acesse no navegador:  
-`http://localhost:3000` → Frontend  
-`http://localhost:8000/api` → Backend API
-
-### ⚙️ Executando manualmente
-
-1. Configure o banco PostgreSQL com PostGIS.  
-2. Backend (Django):
+2. Crie o ambiente virtual e instale as dependências:
 
 ```bash
-cd backend
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
+
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
 ```
 
-3. Frontend (React):
+3. Inicie o MongoDB local:
+
+No terminal:
 
 ```bash
-cd frontend
-npm install
-npm start
+mkdir C:\data\db        # somente no Windows
+mongod
 ```
+
+4. Rode a aplicação:
+
+```bash
+python app.py
+```
+
+Acesse no navegador:
+
+- [http://localhost:5000](http://localhost:5000) → site com mapas
+- [http://localhost:5000/api/paradas](http://localhost:5000/api/paradas) → dados JSON da API
 
 ---
 
-## 🗺️ Banco de Dados
+## 🧰 Testes e Debug
 
-Ativar extensão PostGIS no banco:
+Como o app é leve, os testes iniciais podem ser feitos acessando os endpoints API diretamente no navegador ou Postman:
 
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
-```
+- /api/paradas
+- /api/rotas
+- /api/rotas/
+- /api/turismo
+
+Testes automatizados podem ser adicionados com pytest ou unittest futuramente.
 
 ---
 
-## 🧪 Testes
+## 💾 Dados de Exemplo
 
-- Testes backend:
+Os dados podem ser adicionados manualmente pelo MongoDB Compass nas coleções:
 
-```bash
-python manage.py test
-```
+- rotas
+- paradas
+- horarios
+- turismo
 
-- Testes frontend:
+Ou criados com scripts Python (init\_mongo.py).
 
-```bash
-npm test
-```
+---
+
+## 📁 Estrutura do Projeto
+
+- app.py → principal servidor Flask
+- templates/ → arquivos HTML (Jinja2)
+- static/ → CSS, JS e ícones personalizados
+- requirements.txt → dependências Python
+- README.md → este guia
 
 ---
 
 ## 👥 Contribuidores
 
--  
+- Gabriel Kalebe
 - Equipe MOVBR
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob licença (). Veja o arquivo [LICENSE](https://github.com/GustavoLarre/MOVBR/blob/2e62430176d4ea97f36220671e1713c5826f278e/LICENSE.txt) para mais detalhes.
+Este projeto está sob licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
