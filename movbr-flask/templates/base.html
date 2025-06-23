@@ -2,33 +2,58 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <title>MOVBR</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <title>{% block title %}MOVBR - TourMap{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   </head>
   <body>
-    <header>
-      <nav>
-        <a href="{{ url_for('home') }}">Início</a> |
-        <a href="{{ url_for('paradas') }}">Paradas</a> |
-        <a href="{{ url_for('pontos_turisticos') }}">Turismo</a> | {% if
-        session.get('usuario') %} Olá, {{ session['usuario'] }} |
-        <a href="{{ url_for('logout') }}">Sair</a> {% else %}
-        <a href="{{ url_for('login') }}">Entrar</a> |
-        <a href="{{ url_for('registro') }}">Cadastrar</a> {% endif %}
+    <header class="header">
+      <h1 class="logo"><a href="{{ url_for('home') }}">MOVBR</a></h1>
+
+      <form method="get" class="search-box">
+        <input type="text" name="q" placeholder="Buscar ponto, parada ou rota..." />
+        <button type="submit">
+          <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="Buscar" />
+        </button>
+      </form>
+
+      <nav class="nav-links">
+        <a href="{{ url_for('home') }}">Início</a>
+        <a href="{{ url_for('paradas') }}">Paradas</a>
+        <a href="{{ url_for('paradas_proximas') }}">Paradas Próximas</a>
+        <a href="{{ url_for('pontos_turisticos') }}">Turismo</a>
+        {% if session.get('usuario') %}
+          <span>Olá, {{ session['usuario'] }}</span>
+          <a href="{{ url_for('logout') }}">Sair</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Entrar</a>
+          <a href="{{ url_for('registro') }}">Cadastrar</a>
+        {% endif %}
       </nav>
     </header>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <ul class="flash-messages">
-      {% for category, message in messages %}
-      <li class="flash {{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} {% endwith %}
 
-    <main>{% block content %}{% endblock %}</main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}
+    <script>
+      const map = L.map("map").setView([-15.78, -47.93], 12);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+    </script>
+    {% endblock %}
   </body>
 </html>

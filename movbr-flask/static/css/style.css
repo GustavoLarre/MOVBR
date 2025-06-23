@@ -123,3 +123,33 @@ body {
 .btn-detalhe:hover {
   background-color: #0056b3;
 }
+
+.login-card {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  color: #343a40;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  font-size: 1rem;
+}
+
+.form-link {
+  text-align: center;
+  margin-top: 1rem;
+}

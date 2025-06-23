@@ -5,14 +5,14 @@ from flask_bcrypt import Bcrypt
 from datetime import timedelta
 
 app = Flask(__name__)
-app.secret_key = "senha123"  
+app.secret_key = "senha123"
 app.permanent_session_lifetime = timedelta(days=7)
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["movbr"]
 bcrypt = Bcrypt(app)
 
-# 🔧 Cria coleções e índices
+# Criação de coleções e índices geoespaciais
 def setup_collection(name, geo_fields=[]):
     if name not in db.list_collection_names():
         db.create_collection(name)
@@ -25,7 +25,7 @@ setup_collection("turismo", ["localizacao"])
 setup_collection("horarios")
 setup_collection("usuarios")
 
-# 🔄 Serializadores
+# Serializadores
 def serialize_parada(parada):
     parada["_id"] = str(parada["_id"])
     parada["localizacao"] = parada.get("localizacao", {})
@@ -44,7 +44,7 @@ def serialize_ponto(ponto):
     ponto["localizacao"] = ponto.get("localizacao", {})
     return ponto
 
-# 🧑‍💻 Autenticação
+# Autenticação
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -81,7 +81,7 @@ def registro():
         return redirect(url_for("login"))
     return render_template("registro.html")
 
-# 🔗 Rotas de API
+# API JSON
 @app.route("/api/paradas")
 def api_paradas():
     paradas = list(db.paradas.find())
@@ -104,7 +104,7 @@ def api_turismo():
     pontos = list(db.turismo.find())
     return jsonify([serialize_ponto(p) for p in pontos])
 
-# 🌐 Rotas Web
+# Páginas HTML
 @app.route("/")
 def home():
     rotas = list(db.rotas.find())
