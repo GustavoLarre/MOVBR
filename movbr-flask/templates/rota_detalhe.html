@@ -1,46 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Detalhes da Rota</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-</head>
-<body>
-  <header class="header">
-    <h1 class="logo">MOVBR</h1>
-    <a href="/" class="btn-detalhe">Voltar</a>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Detalhes da Rota</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="logo">MOVBR</h1>
+      <a href="/" class="btn-detalhe">Voltar</a>
+    </header>
 
-  <main style="padding: 2rem">
-    <section class="card">
-      <div class="card-info">
-        <h2>{{ rota.nome }}</h2>
-        <p>{{ rota.descricao }}</p>
+    <main style="padding: 2rem">
+      <section class="card">
+        <div class="card-info">
+          <h2>{{ rota.nome }}</h2>
+          <p>{{ rota.descricao }}</p>
+        </div>
+      </section>
+
+      <div class="map-container" style="margin-top: 2rem">
+        <div id="map"></div>
       </div>
-    </section>
+    </main>
 
-    <div class="map-container" style="margin-top: 2rem">
-      <div id="map"></div>
-    </div>
-  </main>
+    <script>
+      const rota = {{ rota | tojson }};
+      const map = L.map('map').setView([-15.78, -47.93], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
 
-  <script>
-    const rota = {{ rota | tojson }};
-    const map = L.map('map').setView([-15.78, -47.93], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    if (rota.origem?.coordinates) {
-      const [lng, lat] = rota.origem.coordinates;
-      L.marker([lat, lng]).addTo(map).bindPopup('Origem');
-    }
-    if (rota.destino?.coordinates) {
-      const [lng, lat] = rota.destino.coordinates;
-      L.marker([lat, lng]).addTo(map).bindPopup('Destino');
-    }
-  </script>
-</body>
+      if (rota.origem?.coordinates) {
+        const [lng, lat] = rota.origem.coordinates;
+        L.marker([lat, lng]).addTo(map).bindPopup('Origem');
+      }
+      if (rota.destino?.coordinates) {
+        const [lng, lat] = rota.destino.coordinates;
+        L.marker([lat, lng]).addTo(map).bindPopup('Destino');
+      }
+    </script>
+  </body>
 </html>

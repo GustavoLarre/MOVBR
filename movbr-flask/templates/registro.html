@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+
+<h2>Cadastro</h2>
+<form method="post">
+  <label>Nome:</label><br />
+  <input type="text" name="nome" required /><br /><br />
+  php-template Copiar Editar
+  <label>Email:</label><br />
+  <input type="email" name="email" required /><br /><br />
+
+  <label>Senha:</label><br />
+  <input type="password" name="senha" required /><br /><br />
+
+  <button type="submit">Cadastrar</button>
+</form>
+<p>Já tem conta? <a href="{{ url_for('login') }}">Entrar</a></p>
+{% endblock %}

@@ -1,27 +1,31 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from flask_bcrypt import Bcrypt
+from datetime import timedelta
 
 app = Flask(__name__)
+app.secret_key = "senha123"  
+app.permanent_session_lifetime = timedelta(days=7)
+
 client = MongoClient("mongodb://localhost:27017/")
 db = client["movbr"]
+bcrypt = Bcrypt(app)
 
-# 🔧 Cria coleções e índices automaticamente se ainda não existirem
+# 🔧 Cria coleções e índices
 def setup_collection(name, geo_fields=[]):
     if name not in db.list_collection_names():
         db.create_collection(name)
-        print(f"✅ Criada coleção: {name}")
     for field in geo_fields:
         db[name].create_index([(field, "2dsphere")])
-        print(f"🌍 Índice geoespacial criado em: {name}.{field}")
 
 setup_collection("rotas", ["origem", "destino"])
 setup_collection("paradas", ["localizacao"])
 setup_collection("turismo", ["localizacao"])
-setup_collection("horarios")  # agora inclui horários também
+setup_collection("horarios")
+setup_collection("usuarios")
 
-# Utilitários para serialização
-
+# 🔄 Serializadores
 def serialize_parada(parada):
     parada["_id"] = str(parada["_id"])
     parada["localizacao"] = parada.get("localizacao", {})
@@ -40,8 +44,44 @@ def serialize_ponto(ponto):
     ponto["localizacao"] = ponto.get("localizacao", {})
     return ponto
 
-# 🔗 Rotas de API (JSON)
+# 🧑‍💻 Autenticação
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form["email"]
+        senha = request.form["senha"]
+        user = db.usuarios.find_one({"email": email})
+        if user and bcrypt.check_password_hash(user["senha"], senha):
+            session["usuario"] = user["nome"]
+            return redirect(url_for("home"))
+        flash("Credenciais inválidas", "danger")
+    return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    session.pop("usuario", None)
+    return redirect(url_for("home"))
+
+@app.route("/registro", methods=["GET", "POST"])
+def registro():
+    if request.method == "POST":
+        nome = request.form["nome"]
+        email = request.form["email"]
+        senha = request.form["senha"]
+        if db.usuarios.find_one({"email": email}):
+            flash("Email já cadastrado", "warning")
+            return redirect(url_for("registro"))
+        senha_hash = bcrypt.generate_password_hash(senha).decode("utf-8")
+        db.usuarios.insert_one({
+            "nome": nome,
+            "email": email,
+            "senha": senha_hash
+        })
+        flash("Cadastro realizado com sucesso!", "success")
+        return redirect(url_for("login"))
+    return render_template("registro.html")
+
+# 🔗 Rotas de API
 @app.route("/api/paradas")
 def api_paradas():
     paradas = list(db.paradas.find())
@@ -64,12 +104,11 @@ def api_turismo():
     pontos = list(db.turismo.find())
     return jsonify([serialize_ponto(p) for p in pontos])
 
-# 🌐 Rotas HTML (render_template)
-
+# 🌐 Rotas Web
 @app.route("/")
 def home():
     rotas = list(db.rotas.find())
-    return render_template("home.html", rotas=rotas)
+    return render_template("home.html", rotas=rotas, usuario=session.get("usuario"))
 
 @app.route("/rota/<id>")
 def rota_detalhe(id):
