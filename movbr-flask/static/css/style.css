@@ -1,3 +1,17 @@
+.nav-links a {
+  background-color: #e9ecef;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-links a:hover {
+  background-color: #ced4da;
+}
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;

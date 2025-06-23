@@ -1,17 +1,61 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %}Cadastro{% endblock %} {% block
+content %}
 
-<h2>Cadastro</h2>
-<form method="post" class="form-auth">
-  <label for="nome">Nome:</label><br />
-  <input type="text" id="nome" name="nome" required /><br /><br />
-  php-template Copiar Editar
-  <label for="email">Email:</label><br />
-  <input type="email" id="email" name="email" required /><br /><br />
+<div class="card login-card">
+  <h2 class="form-title">Criar uma nova conta</h2>
+  <form method="post" class="form-auth" onsubmit="return validarFormulario();">
+    <div class="form-group">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required class="form-input" />
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required class="form-input" />
+    </div>
 
-  <label for="senha">Senha:</label><br />
-  <input type="password" id="senha" name="senha" required /><br /><br />
+    <div class="form-group">
+      <label for="senha">Senha:</label>
+      <input
+        type="password"
+        id="senha"
+        name="senha"
+        required
+        class="form-input"
+      />
+    </div>
 
-  <button type="submit">Cadastrar</button>
-</form>
-<p>Já tem conta? <a href="{{ url_for('login') }}">Entrar</a></p>
+    <div class="form-group">
+      <label for="confirmar_senha">Confirmar Senha:</label>
+      <input type="password" id="confirmar_senha" required class="form-input" />
+    </div>
+
+    <small id="erro-senha" style="color: red; display: none"></small>
+
+    <button type="submit" class="btn-detalhe">Cadastrar</button>
+  </form>
+  <p class="form-link">
+    Já tem conta? <a href="{{ url_for('login') }}">Entrar</a>
+  </p>
+</div>
+<script>
+  function validarFormulario() {
+    const senha = document.getElementById("senha").value;
+    const confirmar = document.getElementById("confirmar_senha").value;
+    const erro = document.getElementById("erro-senha");
+    const senhaForte = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (senha !== confirmar) {
+      erro.textContent = "As senhas não coincidem.";
+      erro.style.display = "block";
+      return false;
+    }
+    if (!senhaForte.test(senha)) {
+      erro.textContent =
+        "A senha deve ter no mínimo 8 caracteres, incluindo letras e números.";
+      erro.style.display = "block";
+      return false;
+    }
+    erro.style.display = "none";
+    return true;
+  }
+</script>
 {% endblock %}
