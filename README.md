@@ -138,4 +138,4 @@ npm test
 
 ## 📄 Licença
 
-Este projeto está sob licença (). Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob licença (). Veja o arquivo [LICENSE](https://github.com/GustavoLarre/MOVBR/blob/2e62430176d4ea97f36220671e1713c5826f278e/LICENSE.txt) para mais detalhes.
