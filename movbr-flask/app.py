@@ -7,6 +7,19 @@ app = Flask(__name__)
 client = MongoClient("mongodb://localhost:27017/")
 db = client["movbr"]
 
+# 🔧 Cria coleções e índices automaticamente se ainda não existirem
+def setup_collection(name, geo_fields=[]):
+    if name not in db.list_collection_names():
+        db.create_collection(name)
+        print(f"✅ Criada coleção: {name}")
+    for field in geo_fields:
+        db[name].create_index([(field, "2dsphere")])
+        print(f"🌍 Índice geoespacial criado em: {name}.{field}")
+
+setup_collection("rotas", ["origem", "destino"])
+setup_collection("paradas", ["localizacao"])
+setup_collection("turismo", ["localizacao"])
+
 @app.route("/")
 def home():
     rotas = list(db.rotas.find())
