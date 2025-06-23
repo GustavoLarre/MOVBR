@@ -2,6 +2,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Rota
 from .serializers import RotaSerializer
+from django.shortcuts import get_object_or_404
+
+@api_view(['GET'])
+def listar_rotas(request):
+    rotas = Rota.objects.all()
+    serializer = RotaSerializer(rotas, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def buscar_rotas(request):
@@ -9,13 +16,6 @@ def buscar_rotas(request):
     rotas = Rota.objects.filter(nome__icontains=busca)[:10]
     serializer = RotaSerializer(rotas, many=True)
     return Response(serializer.data)
-
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Rota
-from .serializers import RotaSerializer
-from django.shortcuts import get_object_or_404
 
 @api_view(['GET'])
 def rota_detalhe(request, pk):
