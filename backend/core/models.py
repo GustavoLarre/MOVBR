@@ -24,3 +24,11 @@ class Horario(models.Model):
 
     def __str__(self):
         return f"{self.parada.nome} às {self.horario_previsto}"
+
+class PontoTuristico(models.Model):
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField()
+    localizacao = gis_models.PointField(geography=True)
+
+    def __str__(self):
+        return self.nome

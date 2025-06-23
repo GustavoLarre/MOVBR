@@ -18,3 +18,13 @@ export async function buscarRotaPorId(id) {
   }
 }
 
+export async function buscarParadas() {
+  try {
+    const res = await fetch("http://localhost:8000/api/paradas/");
+    return await res.json();
+  } catch (err) {
+    console.error("Erro ao buscar paradas:", err);
+    return [];
+  }
+}
+
