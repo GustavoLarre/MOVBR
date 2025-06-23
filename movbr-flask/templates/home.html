@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Rotas Disponíveis</h2>
+<ul>
+  {% for rota in rotas %}
+    <li>
+      <strong>{{ rota.nome }}</strong> — {{ rota.descricao }}<br />
+      <a href="/rota/{{ rota._id }}">Ver detalhes</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

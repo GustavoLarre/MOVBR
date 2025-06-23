@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ rota.nome }}</h2>
+<p>{{ rota.descricao }}</p>
+<div id="map" style="height: 400px;"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const origem = {{ rota.origem.coordinates|safe }};
+  const destino = {{ rota.destino.coordinates|safe }};
+  const map = L.map('map').setView(origem.reverse(), 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  L.marker(origem).addTo(map).bindPopup("Origem").openPopup();
+  L.marker(destino).addTo(map).bindPopup("Destino");
+  L.polyline([origem, destino], { color: 'blue' }).addTo(map);
+</script>
+{% endblock %}

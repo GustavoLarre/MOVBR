@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Pontos Turísticos</h2>
+<ul>
+  {% for ponto in pontos %}
+    <li><strong>{{ ponto.nome }}</strong>: {{ ponto.descricao }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
