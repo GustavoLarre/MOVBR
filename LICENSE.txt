@@ -1,0 +1,40 @@
+Copyright (c) 2025  
+Gustavo Larré  
+Laila Mota  
+Lara Rafaella  
+Gabriela Vitor  
+Gabriel Sousa
+
+1. Definições  
+Para os fins desta licença, "Software" refere-se ao código-fonte, arquivos, documentação e demais materiais fornecidos neste projeto denominado MOVBR.
+
+2. Concessão de Licença  
+O Software é disponibilizado exclusivamente para uso pessoal, não comercial e intransferível. O usuário tem o direito de utilizar o Software para seus próprios fins privados, sem direito de redistribuir ou modificar.
+
+3. Restrições  
+Sem autorização expressa e por escrito dos detentores dos direitos autorais, fica expressamente proibido:  
+a) Distribuir, copiar, divulgar, compartilhar, alugar, vender ou de qualquer forma transferir o Software, total ou parcialmente, para terceiros;  
+b) Modificar, adaptar, traduzir, descompilar, realizar engenharia reversa, criar obras derivadas ou fazer alterações de qualquer natureza no Software;  
+c) Utilizar o Software para fins comerciais, lucrativos ou qualquer outra atividade remunerada;  
+d) Remover ou alterar avisos de copyright, marcas registradas ou quaisquer avisos de propriedade intelectual contidos no Software.
+
+4. Responsabilidades  
+O uso do Software é de inteira responsabilidade do usuário. Os detentores dos direitos autorais não serão responsáveis por quaisquer danos diretos, indiretos, incidentais, especiais, consequenciais ou de qualquer outra natureza decorrentes do uso ou da impossibilidade de uso do Software, incluindo, mas não se limitando a, perdas de dados, lucros cessantes ou interrupção de negócios.
+
+5. Garantias  
+O Software é fornecido "no estado em que se encontra", sem garantias de qualquer tipo, sejam expressas ou implícitas, incluindo, sem limitação, garantias de comercialização, adequação a um propósito específico ou não violação de direitos.
+
+6. Autorização  
+Para quaisquer usos que não estejam expressamente permitidos nesta licença, incluindo, mas não se limitando a, distribuição, modificação ou uso comercial, o usuário deverá obter autorização prévia, expressa e por escrito dos detentores dos direitos autorais.
+
+7. Vigência e Rescisão  
+Esta licença é válida por prazo indeterminado, podendo ser rescindida automaticamente caso o usuário descumpra quaisquer das condições aqui estabelecidas. Em caso de rescisão, o usuário deverá cessar imediatamente o uso do Software e eliminar todas as cópias em sua posse.
+
+8. Disposições Gerais  
+Esta licença será regida e interpretada de acordo com as leis vigentes na jurisdição dos detentores dos direitos autorais. Caso alguma disposição desta licença seja considerada inválida ou inexequível, as demais permanecerão em pleno vigor e efeito.
+
+---
+
+Para dúvidas, solicitações de autorização ou outras informações, entre em contato com os autores:  
+Gustavo Larré, Laila Mota, Lara Rafaella, Gabriela Vitor e Gabriel Sousa  
+
