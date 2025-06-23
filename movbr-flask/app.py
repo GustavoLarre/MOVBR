@@ -20,13 +20,51 @@ setup_collection("paradas", ["localizacao"])
 setup_collection("turismo", ["localizacao"])
 setup_collection("horarios")  # agora inclui horários também
 
-# Utilitário para serializar parada com horários
+# Utilitários para serialização
+
 def serialize_parada(parada):
     parada["_id"] = str(parada["_id"])
     parada["localizacao"] = parada.get("localizacao", {})
     horarios = list(db.horarios.find({"parada": parada["_id"]}))
     parada["horarios"] = [{"horario_previsto": str(h["horario_previsto"])} for h in horarios]
     return parada
+
+def serialize_rota(rota):
+    rota["_id"] = str(rota["_id"])
+    rota["origem"] = rota.get("origem", {})
+    rota["destino"] = rota.get("destino", {})
+    return rota
+
+def serialize_ponto(ponto):
+    ponto["_id"] = str(ponto["_id"])
+    ponto["localizacao"] = ponto.get("localizacao", {})
+    return ponto
+
+# 🔗 Rotas de API (JSON)
+
+@app.route("/api/paradas")
+def api_paradas():
+    paradas = list(db.paradas.find())
+    return jsonify([serialize_parada(p) for p in paradas])
+
+@app.route("/api/rotas")
+def api_rotas():
+    rotas = list(db.rotas.find())
+    return jsonify([serialize_rota(r) for r in rotas])
+
+@app.route("/api/rotas/<id>")
+def api_rota_detalhe(id):
+    rota = db.rotas.find_one({"_id": ObjectId(id)})
+    if not rota:
+        return jsonify({"erro": "Rota não encontrada"}), 404
+    return jsonify(serialize_rota(rota))
+
+@app.route("/api/turismo")
+def api_turismo():
+    pontos = list(db.turismo.find())
+    return jsonify([serialize_ponto(p) for p in pontos])
+
+# 🌐 Rotas HTML (render_template)
 
 @app.route("/")
 def home():
@@ -54,11 +92,6 @@ def paradas_proximas():
 def pontos_turisticos():
     pontos = list(db.turismo.find())
     return render_template("pontos_turisticos.html", pontos=pontos)
-
-@app.route("/api/paradas")
-def api_paradas():
-    paradas = list(db.paradas.find())
-    return jsonify([serialize_parada(p) for p in paradas])
 
 if __name__ == "__main__":
     app.run(debug=True)
