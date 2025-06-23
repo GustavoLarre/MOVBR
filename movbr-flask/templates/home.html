@@ -1,12 +1,52 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Rotas Disponíveis</h2>
-<ul>
-  {% for rota in rotas %}
-    <li>
-      <strong>{{ rota.nome }}</strong> — {{ rota.descricao }}<br />
-      <a href="/rota/{{ rota._id }}">Ver detalhes</a>
-    </li>
-  {% endfor %}
-</ul>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>MOVBR - TourMap</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">MOVBR</h1>
+    <form method="get" class="search-box">
+      <input type="text" name="q" placeholder="Buscar ponto, parada ou rota...">
+      <button type="submit">
+        <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="Buscar">
+      </button>
+    </form>
+  </header>
+
+  <div class="filters">
+    <button class="filter-btn">Todos</button>
+    <button class="filter-btn">Cultura</button>
+    <button class="filter-btn">Natureza</button>
+    <button class="filter-btn">Gastronomia</button>
+    <button class="filter-btn">Transporte</button>
+  </div>
+
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+
+  <section class="card-list">
+    {% for rota in rotas %}
+      <div class="card">
+        <div class="card-info">
+          <h3>{{ rota.nome }}</h3>
+          <p>{{ rota.descricao }}</p>
+        </div>
+        <a href="/rota/{{ rota._id }}" class="btn-detalhe">Ver detalhes</a>
+      </div>
+    {% endfor %}
+  </section>
+
+  <script>
+    const map = L.map('map').setView([-15.78, -47.93], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  </script>
+</body>
+</html>

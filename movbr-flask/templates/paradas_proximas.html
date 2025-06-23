@@ -1,20 +1,69 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Paradas Próximas</h2>
-<p>Baseado na sua localização atual.</p>
-<div id="map" style="height: 500px;"></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-  const paradas = {{ paradas|tojson }};
-  navigator.geolocation.getCurrentPosition(pos => {
-    const userPos = [pos.coords.latitude, pos.coords.longitude];
-    const map = L.map('map').setView(userPos, 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    L.marker(userPos).addTo(map).bindPopup('Você está aqui').openPopup();
-    paradas.forEach(p => {
-      const [lng, lat] = p.localizacao.coordinates;
-      L.marker([lat, lng]).addTo(map).bindPopup(p.nome);
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Paradas Próximas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">MOVBR</h1>
+    <a href="/" class="btn-detalhe">Voltar</a>
+  </header>
+
+  <main style="padding: 2rem">
+    <h2 style="margin-bottom: 1rem">Paradas Próximas</h2>
+
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <section class="card-list" id="lista-paradas"></section>
+  </main>
+
+  <script>
+    const map = L.map('map').setView([-15.78, -47.93], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function calcularDistancia(coord1, coord2) {
+      const R = 6371e3; // metros
+      const toRad = deg => deg * Math.PI / 180;
+      const dLat = toRad(coord2[1] - coord1[1]);
+      const dLon = toRad(coord2[0] - coord1[0]);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(coord1[1])) * Math.cos(toRad(coord2[1])) * Math.sin(dLon/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+      const userCoords = [pos.coords.longitude, pos.coords.latitude];
+      L.marker([userCoords[1], userCoords[0]], {icon: L.icon({iconUrl: '/static/icons/user.svg', iconSize: [32,32]})})
+        .addTo(map).bindPopup("Você está aqui").openPopup();
+      map.setView([userCoords[1], userCoords[0]], 15);
+
+      fetch('/api/paradas')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("lista-paradas");
+          const proximas = data.filter(p => calcularDistancia(userCoords, p.localizacao.coordinates) < 800);
+
+          proximas.forEach(p => {
+            const [lng, lat] = p.localizacao.coordinates;
+            L.marker([lat, lng]).addTo(map).bindPopup(p.nome);
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<div class="card-info"><h3>${p.nome}</h3><p>${(p.horarios || []).map(h => h.horario_previsto).join(', ')}</p></div>`;
+            container.appendChild(card);
+          });
+        });
+    }, err => {
+      alert("Não foi possível obter sua localização: " + err.message);
     });
-  });
-</script>
-{% endblock %}
+  </script>
+</body>
+</html>

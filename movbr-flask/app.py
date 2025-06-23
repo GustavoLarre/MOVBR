@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from bson.json_util import dumps
 
 app = Flask(__name__)
 client = MongoClient("mongodb://localhost:27017/")
@@ -19,6 +18,15 @@ def setup_collection(name, geo_fields=[]):
 setup_collection("rotas", ["origem", "destino"])
 setup_collection("paradas", ["localizacao"])
 setup_collection("turismo", ["localizacao"])
+setup_collection("horarios")  # agora inclui horários também
+
+# Utilitário para serializar parada com horários
+def serialize_parada(parada):
+    parada["_id"] = str(parada["_id"])
+    parada["localizacao"] = parada.get("localizacao", {})
+    horarios = list(db.horarios.find({"parada": parada["_id"]}))
+    parada["horarios"] = [{"horario_previsto": str(h["horario_previsto"])} for h in horarios]
+    return parada
 
 @app.route("/")
 def home():
@@ -33,6 +41,8 @@ def rota_detalhe(id):
 @app.route("/paradas")
 def paradas():
     paradas = list(db.paradas.find())
+    for p in paradas:
+        p["horarios"] = list(db.horarios.find({"parada": p["_id"]}))
     return render_template("paradas.html", paradas=paradas)
 
 @app.route("/paradas-proximas")
@@ -44,6 +54,11 @@ def paradas_proximas():
 def pontos_turisticos():
     pontos = list(db.turismo.find())
     return render_template("pontos_turisticos.html", pontos=pontos)
+
+@app.route("/api/paradas")
+def api_paradas():
+    paradas = list(db.paradas.find())
+    return jsonify([serialize_parada(p) for p in paradas])
 
 if __name__ == "__main__":
     app.run(debug=True)
